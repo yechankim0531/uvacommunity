@@ -3,7 +3,6 @@
 A web application built for UVA students to create and join interest-based communities, plan events, share files, and chat with fellow members in real time.
  
 > Built with Django · Google OAuth · PostgreSQL · Heroku  
-> CS 3240 — Advanced Software Development, University of Virginia
  
 ---
  
