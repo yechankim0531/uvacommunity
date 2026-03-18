@@ -1,4 +1,4 @@
-# 🏠 Hoos Together — UVA Community Platform
+#  Hoos Together — UVA Community Platform
  
 A web application built for UVA students to create and join interest-based communities, plan events, share files, and chat with fellow members in real time.
  
