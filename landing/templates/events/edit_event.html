@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Event</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background-color: #7749F8;
+        }
+        .search-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border: none;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+        }
+        .search-button:hover {
+            background-color: white;
+            border: none;
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .nav-link:hover {
+            color: #aaa !important;
+        }
+        .btn-custom-primary {
+            background-color: #7749F8;
+            color: white;
+            padding: 0.5rem 1rem;
+            height: 40px;
+        }
+        .btn-custom-primary:hover {
+            background-color: #5227CC;
+            color: white;
+        }
+        .btn-custom-secondary {
+            background-color: #EBE5FC;
+            color: #6610F2;
+            padding: 0.5rem 1rem;
+            height: 40px;
+        }
+        .btn-custom-secondary:hover {
+            background-color: #5227CC;
+            color: white;
+        }
+        .btn-delete {
+            color: #750227;
+            background-color: #F1D2D4;
+            border: none;
+            padding: 0.5rem 1rem;
+            height: 40px;
+        }
+        .btn-delete:hover {
+            color: white;
+            background-color: firebrick;
+        }
+        .badge {
+            background-color: #EBE5FC;
+            color: #5227CC;
+            margin-right: 5px;
+        }
+        .card-header {
+            color: #5227CC;
+        }
+        .description-padding {
+            padding-top: 10px;
+        }
+        .community-image {
+            width: 100%; /
+            max-height: 500px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'landing' %}">Hoos Together</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/my-events/">My Events</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my-communities/">My Communities</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/create-community/">Create a Community</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/requests/">Requests</a></li>
+                </ul>
+                <form class="d-flex me-3" role="search" method="get" action="{% url 'landing' %}">
+                    <div class="input-group search-wrapper">
+                        <input class="form-control" type="search" name="search" placeholder="Search Communities" aria-label="Search" value="{{ search_query }}">
+                        <button class="btn search-button" type="submit"><i class="bi bi-search"></i></button>
+                    </div>
+                </form>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <a class="nav-link" href="/login/">Log Out</a>
+                {% else %}
+                    <a class="nav-link" href="/login/">Log In</a>
+                {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header text-white" style="background-color: #7749F8;">
+            <h2>Edit Event</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Event Name -->
+                <div class="mb-3">
+                    <label for="id_name" class="form-label"><strong>Event Name</strong></label>
+                    {{ form.name }}
+                </div>
+
+                <!-- Event Location -->
+                <div class="mb-3">
+                    <label for="id_location" class="form-label"><strong>Location</strong></label>
+                    {{ form.location }}
+                </div>
+
+                <!-- Event Date -->
+                <div class="mb-3">
+                    <label for="id_date" class="form-label"><strong>Date</strong></label>
+                    {{ form.date }}
+                </div>
+
+                <!-- Event Description -->
+                <div class="mb-3">
+                    <label for="id_description" class="form-label"><strong>Description</strong></label>
+                    {{ form.description }}
+                </div>
+
+                <!-- Event Type -->
+                <div class="mb-3">
+                    <label for="id_event_type" class="form-label"><strong>Event Type</strong></label>
+                    {{ form.event_type }}
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'event_detail' event.id %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

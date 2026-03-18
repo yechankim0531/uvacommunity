@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requests</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: white;
+            color: black;
+        }
+
+        .navbar {
+            background-color: #7749F8;
+        }
+
+        .search-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border: none;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+        }
+        .search-button:hover {
+            background-color: white;
+            border: none;
+        }
+
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+
+        .nav-link:hover {
+            color: #aaa !important;
+        }
+
+        .content-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            border: none;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        h2 {
+            color: #7749F8;
+            font-weight: bold;
+        }
+
+        form {
+            display: inline-block;
+        }
+
+        .btn-success, .btn-danger {
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .list-group-item .badge {
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'landing' %}">Hoos Together</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/my-events/">My Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/my-communities/">My Communities</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/create-community/">Create a Community</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/requests/">Requests</a>
+                </li>
+            </ul>
+
+            <form class="d-flex me-3" role="search" method="get" action="{% url 'landing' %}">
+                <div class="input-group search-wrapper">
+                    <input class="form-control" type="search" name="search" placeholder="Search Communities" aria-label="Search" value="{{ search_query }}">
+                    <button class="btn search-button" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="/login/">Log Out</a>
+                {% else %}
+                    <a class="nav-link" href="/login/">Log In</a>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="content-container">
+    {% if messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                {{ message }}<br>
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+
+    <h2>Outgoing Join Requests</h2>
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>Community</th>
+                    <th>Requested On</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in outgoing_requests %}
+                    <tr>
+                        <td>{{ request.community.name }}</td>
+                        <td>{{ request.request_date|date:"d, F Y, h:i A" }}</td>
+                        <td>
+                            <span class="badge {% if request.status == 'accepted' %}bg-success{% elif request.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                {{ request.status|capfirst }}
+                            </span>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-muted">No outgoing requests.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Incoming Join Requests</h2>
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Community</th>
+                    <th>Requested On</th>
+                    <th>Actions</th>
+                    <th>Status</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in incoming_requests %}
+                    <tr>
+                        <td>{{ request.user.username }}</td>
+                        <td>{{ request.community.name }}</td>
+                        <td>{{ request.request_date|date:"Nov. d, Y, h:i a" }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'handle_join_request' request.id 'accept' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                            </form>
+                            <form method="POST" action="{% url 'handle_join_request' request.id 'reject' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                            </form>
+                        </td>
+                        <td>
+                            <span class="badge {% if request.status == 'accepted' %}bg-success{% elif request.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                {{ request.status|capfirst }}
+                            </span>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-muted">No incoming requests.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

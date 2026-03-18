@@ -1,0 +1,17 @@
+2024-10-05 17:19:15.030 EDT [94515] LOG:  starting PostgreSQL 14.13 (Homebrew) on aarch64-apple-darwin23.4.0, compiled by Apple clang version 15.0.0 (clang-1500.3.9.4), 64-bit
+2024-10-05 17:19:15.031 EDT [94515] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-10-05 17:19:15.031 EDT [94515] LOG:  listening on IPv6 address "::1", port 5432
+2024-10-05 17:19:15.032 EDT [94515] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2024-10-05 17:19:15.033 EDT [94516] LOG:  database system was shut down at 2024-10-05 17:17:59 EDT
+2024-10-05 17:19:15.035 EDT [94515] LOG:  database system is ready to accept connections
+2024-10-05 17:19:28.995 EDT [94548] FATAL:  role "postgres" does not exist
+2024-10-05 17:19:53.384 EDT [94573] FATAL:  database "bryankatuari" does not exist
+2024-10-05 18:11:35.971 EDT [96047] ERROR:  insert or update on table "django_admin_log" violates foreign key constraint "django_admin_log_user_id_c564eba6_fk_auth_user_id"
+2024-10-05 18:11:35.971 EDT [96047] DETAIL:  Key (user_id)=(1) is not present in table "auth_user".
+2024-10-05 18:11:35.971 EDT [96047] STATEMENT:  COMMIT
+2024-10-05 18:14:29.436 EDT [96157] ERROR:  insert or update on table "django_admin_log" violates foreign key constraint "django_admin_log_user_id_c564eba6_fk_auth_user_id"
+2024-10-05 18:14:29.436 EDT [96157] DETAIL:  Key (user_id)=(1) is not present in table "auth_user".
+2024-10-05 18:14:29.436 EDT [96157] STATEMENT:  COMMIT
+2024-10-05 18:21:12.712 EDT [96330] ERROR:  duplicate key value violates unique constraint "users_customuser_username_key"
+2024-10-05 18:21:12.712 EDT [96330] DETAIL:  Key (username)=(admintest) already exists.
+2024-10-05 18:21:12.712 EDT [96330] STATEMENT:  INSERT INTO "users_customuser" ("password", "last_login", "is_superuser", "username", "first_name", "last_name", "email", "is_staff", "is_active", "date_joined", "is_pma") VALUES ('pbkdf2_sha256$870000$VJdrgxURWNGyJUqEsjGxKk$vyvIA4xUK1/TVW/q/hWCg39VrrM4q1K0Z+CWvIHXKdA=', NULL, false, 'admintest', '', '', 'admintest@gmail.com', false, true, '2024-10-05T22:21:12.563379+00:00'::timestamptz, false) RETURNING "users_customuser"."id"

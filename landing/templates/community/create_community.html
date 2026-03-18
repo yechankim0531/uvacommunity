@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a Community</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: white;
+            color: black;
+        }
+
+        .navbar {
+            background-color: #7749F8;
+        }
+
+        .search-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border: none;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+        }
+
+        .search-button:hover {
+            background-color: white;
+            border: none;
+        }
+
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+
+        .nav-link:hover {
+            color: #aaa !important;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        h2 {
+            color: #7749F8;
+            font-weight: bold;
+        }
+
+        .btn-success, .btn-danger {
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        .btn-custom-primary {
+            background-color: #7749F8;
+            color: white;
+            border: none;
+        }
+        .search-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border: none;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+        }
+        .search-button:hover{
+            background-color: white;
+        }
+        .btn-custom-primary:hover {
+            background-color: #5227CC;
+            color: white;
+        }
+
+        .btn-custom-secondary {
+            background-color: #EBE5FC;
+            color: #6610F2;
+        }
+
+        .btn-custom-secondary:hover {
+            background-color: #5227CC;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'landing' %}">Hoos Together</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-events/">My Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-communities/">My Communities</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/create-community/">Create a Community</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/requests/">Requests</a>
+                    </li>
+                </ul>
+                <form class="d-flex me-3" role="search" method="get" action="{% url 'landing' %}">
+                    <div class="input-group search-wrapper">
+                        <input class="form-control" type="search" name="search" placeholder="Search Communities" aria-label="Search" value="{{ search_query }}">
+                        <button class="btn search-button" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login/">Log Out</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login/">Log In</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+
+<script>
+    function clearSearch() {
+        window.location.href = window.location.pathname;
+    }
+</script>
+
+<div class="container mt-5">
+    {% if messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                {{ message }}<br>
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <script>
+            $(document).ready(function(){
+                $('#notAuthorizedModal').modal('show');
+            });
+        </script>
+    {% endif %}
+
+    <h2>Create a Community</h2>
+    <form action="{% url 'create_community' %}" method="post" enctype="multipart/form-data">  <!-- Unified form -->
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="name" class="form-label"><strong>Name:</strong></label>
+            <input type="text" id="name" name="name" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label"><strong>Description:</strong></label>
+            <textarea id="description" name="description" class="form-control" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="tags" class="form-label"><strong>Tags (comma-separated):</strong></label>
+            <input type="text" id="tags" name="tags" class="form-control" required>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-custom-primary">Create</button>
+        </div>
+    </form>
+</div>
+
+<!-- Not Authorized Modal -->
+<div class="modal fade" id="notAuthorizedModal" tabindex="-1" aria-labelledby="notAuthorizedModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notAuthorizedModalLabel">Unauthorized Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Only the creator can edit or delete the community.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-custom-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

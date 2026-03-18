@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ community.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background-color: #7749F8;
+        }
+        .search-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border: none;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+        }
+        .search-button:hover {
+            background-color: white;
+            border: none;
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .nav-link:hover {
+            color: #aaa !important;
+        }
+        .btn-custom-primary {
+            background-color: #7749F8;
+            color: white;
+            padding: 0.5rem 1rem;
+            height: 40px;
+        }
+        .btn-custom-primary:hover {
+            background-color: #5227CC;
+            color: white;
+        }
+        .btn-custom-secondary {
+            background-color: #EBE5FC;
+            color: #6610F2;
+            padding: 0.5rem 1rem;
+            height: 40px;
+        }
+        .btn-custom-secondary:hover {
+            background-color: #5227CC;
+            color: white;
+        }
+        .btn-delete {
+            color: #750227;
+            background-color: #F1D2D4;
+            border: none;
+            padding: 0.5rem 1rem;
+            height: 40px;
+        }
+        .btn-delete:hover {
+            color: white;
+            background-color: firebrick;
+        }
+        .badge {
+            background-color: #EBE5FC;
+            color: #5227CC;
+            margin-right: 5px;
+        }
+        .card-header {
+            color: #5227CC;
+        }
+        .description-padding {
+            padding-top: 10px;
+        }
+        .community-image {
+            width: 100%; /
+            max-height: 500px;
+            object-fit: cover;
+        }
+        .chat-messages {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .chat-messages div {
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+
+        .chat-messages strong {
+            color: #7749F8;
+        }
+
+        .chat-messages span {
+            display: inline-block;
+            margin-left: 5px;
+            word-wrap: break-word;
+        }
+
+        .input-group input {
+            border-radius: 0 0 0 5px;
+        }
+
+        .input-group button {
+            border-radius: 0 0 5px 0;
+        }
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'landing' %}">Hoos Together</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/my-events/">My Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/my-communities/">My Communities</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/create-community/">Create a Community</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/requests/">Requests</a>
+                </li>
+            </ul>
+
+            <form class="d-flex me-3" role="search" method="get" action="{% url 'landing' %}">
+                <div class="input-group search-wrapper">
+                    <input class="form-control" type="search" name="search" placeholder="Search Communities" aria-label="Search" value="{{ search_query }}">
+                    <button class="btn search-button" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="/login/">Log Out</a>
+                {% else %}
+                    <a class="nav-link" href="/login/">Log In</a>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <div class="row g-4">
+        <!-- Left Section -->
+        <div class="col-lg-6">
+            <!-- Details Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-light-grey">
+                    <h1 class="h4 mb-0">{{ community.name }}</h1>
+                </div>
+                <div class="card-body">
+                    <!-- Creator Section -->
+                    <h3 class="h6">Creator</h3>
+                    <ul class="list-group mb-4">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ community.creator.username }}
+                        </li>
+                    </ul>
+
+                    <!-- Members Section -->
+                    <h3 class="h6">Members</h3>
+                    <ul class="list-group mb-4">
+                        {% for member in community.members.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ member.user.username }}
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">No members available.</li>
+                        {% endfor %}
+                    </ul>
+
+                    <!-- Buttons -->
+                    <div class="d-flex flex-wrap mt-4">
+                        {% if is_creator %}
+                            <a href="{% url 'edit_community' community.id %}"
+                               class="btn btn-custom-primary me-2 mb-2">
+                                Edit Community
+                            </a>
+                        {% endif %}
+                        <button type="button" class="btn btn-delete"
+                                data-bs-toggle="modal"
+                                data-bs-target="{% if is_creator %}#deleteConfirmationModal{% elif is_member %}#exitConfirmationModal{% else %}#deleteConfirmationModal{% endif %}">
+                            {% if is_creator %}Delete Community{% elif is_member %}Exit Community{% else %}Delete Community{% endif %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-light-grey">
+                    <h2 class="h5 mb-0">Upcoming Events</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Events List -->
+                    <ul class="list-group mb-4">
+                        {% for event in upcoming_events %}
+                            <li class="list-group-item">
+                                <a href="{% url 'event_detail' event.id %}" class="text-decoration-none text-dark">
+                                    <h4 class="h6">{{ event.name }}</h4>
+                                    <p class="mb-1">{{ event.description }}</p>
+                                    <small><strong>Date:</strong> {{ event.date }}</small><br>
+                                    <small><strong>Type:</strong> {{ event.event_type }}</small>
+                                    <small><strong>Created by:</strong> {{ event.creator.username }}</small>
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">No events yet.</li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'create_event' community.id %}" class="btn btn-custom-primary me-2 mb-2">Create Event</a>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-light-grey">
+                    <h2 class="h5 mb-0">Past Events</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group mb-4">
+                        {% for event in past_events %}
+                            <li class="list-group-item">
+                                <a href="{% url 'event_detail' event.id %}" class="text-decoration-none text-dark">
+                                    <h4 class="h6">{{ event.name }}</h4>
+                                    <p class="mb-1">{{ event.description }}</p>
+                                    <small><strong>Date:</strong> {{ event.date }}</small><br>
+                                    <small><strong>Type:</strong> {{ event.event_type }}</small>
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item text-muted">No past events.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Section -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <!-- Description Section -->
+                <div class="card-body">
+                    <h3 class="h6 description-padding">Description</h3>
+                    <p>{{ community.description }}</p>
+                </div> 
+
+                <!-- Tags Section -->
+                <div class="px-3 pb-3">
+                    {% if community.tags_list %}
+                        <div class="mt-2">
+                            {% for tag in community.tags_list %}
+                                <span class="badge">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mt-2">No tags available.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Community Files Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-light-grey">
+                    <h2 class="h5 mb-0">Community Files</h2>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap mt-4">
+                        <a href="{% url 'view_files' community.id %}" class="btn btn-custom-primary me-2 mb-2">View Files</a>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Chat Box Section -->
+            <div class="card mb-4" style="margin-top: auto;">
+                <div class="card-header bg-light-grey">
+                    <h2 class="h5 mb-0">Community Chat</h2>
+                </div>
+                    <div class="card-body">
+                    <!-- Display messages -->
+                        <div class="chat-messages" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+                            {% for message in messages %}
+                                <div>
+                                    <strong>{{ message.user.username }}</strong>: 
+                                    <span>{{ message.message }}</span> 
+                                    <small class="text-muted">{{ message.timestamp|date:"M d, Y H:i" }}</small>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted">No messages yet. Be the first to say something!</p>
+                            {% endfor %}
+                        </div>
+                
+                        <!-- Input form -->
+                        <form method="POST" class="mt-3">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <input type="text" name="message" class="form-control" placeholder="Type your message..." required>
+                                <button type="submit" class="btn btn-custom-primary">Send</button>
+                            </div>
+                        </form>
+                    </div>
+                </div> 
+            </div>            
+        </div>                     
+    </div>
+</div>
+
+<!-- Modals -->
+
+<!-- Exit Confirmation Modal -->
+<div class="modal fade" id="exitConfirmationModal" tabindex="-1" aria-labelledby="exitConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exitConfirmationModalLabel">Confirm Exit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to exit this community?
+            </div>
+            <div class="modal-footer">
+                <form method="POST" action="{% url 'exit_community' community.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-delete">Exit</button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Delete Community</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this community? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'delete_community' community.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
