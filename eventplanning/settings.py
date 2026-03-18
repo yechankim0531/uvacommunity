@@ -130,21 +130,11 @@ elif env == "production":
     }
 
 else:
-    # Local development environment - use PostgreSQL
+    # Local development environment - use SQLite
     DATABASES = {
         "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("POSTGRES_DB", "db"),  # Default name is 'db'
-            "USER": os.getenv(
-                "POSTGRES_USER", "postgres"
-            ),  # Default user is 'postgres'
-            "PASSWORD": os.getenv(
-                "POSTGRES_PASSWORD", "postgres"
-            ),  # Default password is 'postgres'
-            "HOST": os.getenv(
-                "POSTGRES_HOST", "127.0.0.1"
-            ),  # Localhost for development
-            "PORT": os.getenv("POSTGRES_PORT", "5432"),  # Default PostgreSQL port
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 # Password validation
@@ -211,9 +201,9 @@ MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 MEDIA_ROOT = "media/"
 
 # Heroku settings
-import django_heroku
+# import django_heroku
 
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 
 # Code from the example linked on the course page:
